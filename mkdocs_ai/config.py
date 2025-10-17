@@ -68,9 +68,12 @@ class SearchConfig(base.Config):
 
     enabled = c.Type(bool, default=False)
     embeddings_model = c.Type(str, default="text-embedding-3-small")
-    index_file = c.Type(str, default=".ai-cache/embeddings.json")
+    index_path = c.Type(str, default="search_index.json")
     chunk_size = c.Type(int, default=1000)
     chunk_overlap = c.Type(int, default=200)
+    min_chunk_size = c.Type(int, default=100)
+    semantic_weight = c.Type(float, default=0.7)
+    max_results = c.Type(int, default=10)
 
 
 class AssetSourceConfig(base.Config):

@@ -19,6 +19,8 @@ from .enhancement import (
     EnhancementOptions,
     EnhancementConfig
 )
+from .search.embeddings import EmbeddingGenerator
+from .search.index import VectorIndex
 
 console = Console()
 
@@ -523,6 +525,299 @@ def enhance(
             import traceback
             console.print(traceback.format_exc())
         sys.exit(1)
+
+
+@main.group()
+def search():
+    """Semantic search commands."""
+    pass
+
+
+@search.command("build")
+@click.option(
+    "--config",
+    "-c",
+    type=click.Path(exists=True),
+    default="mkdocs.yml",
+    help="MkDocs configuration file",
+)
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(),
+    default="site/search_index.json",
+    help="Output path for search index",
+)
+@click.option(
+    "--provider",
+    "-p",
+    type=click.Choice(["openrouter", "gemini", "anthropic"]),
+    default="openrouter",
+    help="AI provider to use",
+)
+@click.option(
+    "--api-key",
+    envvar="OPENROUTER_API_KEY",
+    help="API key for the provider",
+)
+@click.option(
+    "--chunk-size",
+    type=int,
+    default=1000,
+    help="Maximum characters per chunk",
+)
+@click.option(
+    "--chunk-overlap",
+    type=int,
+    default=200,
+    help="Overlap between chunks",
+)
+@click.option(
+    "--verbose",
+    "-v",
+    is_flag=True,
+    help="Verbose output",
+)
+def search_build(config, output, provider, api_key, chunk_size, chunk_overlap, verbose):
+    """Build semantic search index from documentation."""
+    import yaml
+    from mkdocs.config import load_config
+    
+    try:
+        # Load MkDocs config
+        console.print(f"[cyan]Loading MkDocs config from {config}...[/cyan]")
+        mkdocs_config = load_config(config)
+        
+        # Initialize provider
+        provider_config = {
+            "api_key": api_key,
+            "model": "anthropic/claude-3.5-sonnet" if provider == "openrouter" else None,
+        }
+        ai_provider = get_provider(provider, provider_config)
+        
+        # Initialize cache
+        cache = CacheManager(cache_dir=".ai-cache")
+        
+        # Initialize embedding generator
+        generator = EmbeddingGenerator(
+            provider=ai_provider,
+            cache=cache,
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap,
+        )
+        
+        # Initialize index
+        index = VectorIndex()
+        
+        # Process all pages
+        console.print(f"[cyan]Processing documentation pages...[/cyan]")
+        
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=console,
+        ) as progress:
+            task = progress.add_task("Building search index...", total=None)
+            
+            async def build_index():
+                # Get all markdown files from docs directory
+                docs_dir = Path(mkdocs_config.get("docs_dir", "docs"))
+                md_files = list(docs_dir.rglob("*.md"))
+                
+                progress.update(task, total=len(md_files))
+                
+                for i, md_file in enumerate(md_files):
+                    # Read file content
+                    content = md_file.read_text()
+                    
+                    # Generate relative URL
+                    rel_path = md_file.relative_to(docs_dir)
+                    page_url = str(rel_path.with_suffix(".html"))
+                    
+                    # Extract title (first heading or filename)
+                    title = md_file.stem.replace("-", " ").title()
+                    for line in content.split("\n")[:10]:
+                        if line.startswith("#"):
+                            title = line.lstrip("#").strip()
+                            break
+                    
+                    progress.update(
+                        task,
+                        description=f"Processing {page_url}...",
+                        completed=i,
+                    )
+                    
+                    # Generate embeddings
+                    chunks = await generator.generate_page_embeddings(
+                        page_url=page_url,
+                        page_title=title,
+                        page_content=content,
+                    )
+                    
+                    # Add to index
+                    index.add_chunks(chunks)
+                
+                progress.update(task, completed=len(md_files))
+            
+            asyncio.run(build_index())
+        
+        # Save index
+        console.print(f"[cyan]Saving search index to {output}...[/cyan]")
+        index.save(output)
+        
+        # Show statistics
+        stats = index.stats()
+        console.print(Panel.fit(
+            f"[bold green]✓ Search Index Built[/bold green]\n\n"
+            f"Total chunks: {stats['total_chunks']}\n"
+            f"Total pages: {stats['total_pages']}\n"
+            f"Avg chunks/page: {stats['avg_chunks_per_page']:.1f}\n"
+            f"Total words: {stats['total_words']:,}\n"
+            f"Avg words/chunk: {stats['avg_words_per_chunk']:.1f}\n"
+            f"Unique words: {stats['unique_words']:,}",
+            border_style="green",
+        ))
+        
+        cache.close()
+        
+    except Exception as e:
+        console.print(f"[red]Error: {e}[/red]")
+        if verbose:
+            import traceback
+            console.print(traceback.format_exc())
+        sys.exit(1)
+
+
+@search.command("query")
+@click.argument("query")
+@click.option(
+    "--index",
+    "-i",
+    type=click.Path(exists=True),
+    default="site/search_index.json",
+    help="Path to search index",
+)
+@click.option(
+    "--provider",
+    "-p",
+    type=click.Choice(["openrouter", "gemini", "anthropic"]),
+    default="openrouter",
+    help="AI provider to use",
+)
+@click.option(
+    "--api-key",
+    envvar="OPENROUTER_API_KEY",
+    help="API key for the provider",
+)
+@click.option(
+    "--limit",
+    "-l",
+    type=int,
+    default=10,
+    help="Maximum results to return",
+)
+@click.option(
+    "--semantic-weight",
+    "-w",
+    type=float,
+    default=0.7,
+    help="Weight for semantic vs keyword search (0-1)",
+)
+@click.option(
+    "--verbose",
+    "-v",
+    is_flag=True,
+    help="Verbose output",
+)
+def search_query(query, index, provider, api_key, limit, semantic_weight, verbose):
+    """Search the documentation."""
+    try:
+        # Load index
+        console.print(f"[cyan]Loading search index from {index}...[/cyan]")
+        vector_index = VectorIndex.load(index)
+        
+        # Initialize provider
+        provider_config = {
+            "api_key": api_key,
+            "model": "anthropic/claude-3.5-sonnet" if provider == "openrouter" else None,
+        }
+        ai_provider = get_provider(provider, provider_config)
+        
+        # Search
+        console.print(f"[cyan]Searching for: {query}[/cyan]\n")
+        
+        async def do_search():
+            return await vector_index.search(
+                query=query,
+                provider=ai_provider,
+                limit=limit,
+                semantic_weight=semantic_weight,
+            )
+        
+        results = asyncio.run(do_search())
+        
+        # Display results
+        if not results:
+            console.print("[yellow]No results found[/yellow]")
+            return
+        
+        console.print(f"[bold]Found {len(results)} results:[/bold]\n")
+        
+        for i, result in enumerate(results, 1):
+            console.print(Panel(
+                f"[bold]{result.title}[/bold]\n"
+                f"[dim]{result.page_url}[/dim]\n\n"
+                f"{result.text[:200]}...\n\n"
+                f"[dim]Score: {result.score:.3f} "
+                f"(semantic: {result.semantic_score:.3f}, "
+                f"keyword: {result.keyword_score:.3f})[/dim]",
+                title=f"Result {i}",
+                border_style="cyan",
+            ))
+            console.print()
+        
+    except Exception as e:
+        console.print(f"[red]Error: {e}[/red]")
+        if verbose:
+            import traceback
+            console.print(traceback.format_exc())
+        sys.exit(1)
+
+
+@search.command("stats")
+@click.option(
+    "--index",
+    "-i",
+    type=click.Path(exists=True),
+    default="site/search_index.json",
+    help="Path to search index",
+)
+def search_stats(index):
+    """Show search index statistics."""
+    try:
+        # Load index
+        console.print(f"[cyan]Loading search index from {index}...[/cyan]")
+        vector_index = VectorIndex.load(index)
+        
+        # Get statistics
+        stats = vector_index.stats()
+        
+        # Display statistics
+        console.print(Panel.fit(
+            f"[bold]Search Index Statistics[/bold]\n\n"
+            f"Total chunks: {stats['total_chunks']:,}\n"
+            f"Total pages: {stats['total_pages']:,}\n"
+            f"Avg chunks per page: {stats['avg_chunks_per_page']:.1f}\n"
+            f"Total words: {stats['total_words']:,}\n"
+            f"Avg words per chunk: {stats['avg_words_per_chunk']:.1f}\n"
+            f"Unique words: {stats['unique_words']:,}",
+            border_style="cyan",
+        ))
+        
+    except Exception as e:
+        console.print(f"[red]Error: {e}[/red]")
+        sys.exit(1)
+
 
 
 if __name__ == "__main__":

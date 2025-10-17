@@ -10,6 +10,8 @@ from .config import AIAssistantConfig
 from .providers import get_provider, ProviderError
 from .cache import CacheManager
 from .generation.markdown import MarkdownProcessor
+from .search.embeddings import EmbeddingGenerator
+from .search.index import VectorIndex
 
 log = logging.getLogger("mkdocs.plugins.ai-assistant")
 
@@ -31,6 +33,7 @@ class AIAssistantPlugin(BasePlugin[AIAssistantConfig]):
         self.cache_manager = None
         self.markdown_processor = None
         self.is_serve = False
+        self.pages_for_search = []
 
     def on_startup(self, *, command: str, dirty: bool) -> None:
         """Initialize plugin on MkDocs startup.
@@ -180,6 +183,14 @@ class AIAssistantPlugin(BasePlugin[AIAssistantConfig]):
         
         # TODO: Apply content enhancement if enabled
         
+        # Collect page for search indexing
+        if self.config.search.enabled:
+            self.pages_for_search.append({
+                "url": page.url if hasattr(page, "url") else page.file.url,
+                "title": page.title if hasattr(page, "title") else page.file.name,
+                "content": markdown,
+            })
+        
         return markdown
 
     def on_post_build(self, *, config: MkDocsConfig) -> None:
@@ -193,7 +204,14 @@ class AIAssistantPlugin(BasePlugin[AIAssistantConfig]):
         
         log.info("AI Assistant post-build phase")
         
-        # TODO: Generate semantic search index
+        # Generate semantic search index
+        if self.config.search.enabled and self.pages_for_search:
+            log.info("Building semantic search index...")
+            try:
+                asyncio.run(self._build_search_index(config))
+            except Exception as e:
+                log.error(f"Failed to build search index: {e}")
+        
         # TODO: Export to Obelisk format if enabled
         
         # Log cache statistics
@@ -204,6 +222,47 @@ class AIAssistantPlugin(BasePlugin[AIAssistantConfig]):
                 f"{stats['size'] / 1024 / 1024:.2f}MB, "
                 f"{stats['hits']} hits, {stats['misses']} misses"
             )
+
+    async def _build_search_index(self, config: MkDocsConfig) -> None:
+        """Build semantic search index.
+        
+        Args:
+            config: MkDocs configuration
+        """
+        # Initialize embedding generator
+        generator = EmbeddingGenerator(
+            provider=self.provider,
+            cache=self.cache_manager,
+            chunk_size=self.config.search.chunk_size,
+            chunk_overlap=self.config.search.chunk_overlap,
+            min_chunk_size=self.config.search.min_chunk_size,
+        )
+        
+        # Initialize index
+        index = VectorIndex()
+        
+        # Process all pages
+        total_chunks = 0
+        for page_data in self.pages_for_search:
+            try:
+                chunks = await generator.generate_page_embeddings(
+                    page_url=page_data["url"],
+                    page_title=page_data["title"],
+                    page_content=page_data["content"],
+                )
+                index.add_chunks(chunks)
+                total_chunks += len(chunks)
+            except Exception as e:
+                log.error(f"Failed to process page {page_data['url']}: {e}")
+        
+        # Save index
+        index_path = Path(config.site_dir) / self.config.search.index_path
+        index.save(str(index_path))
+        
+        log.info(
+            f"Search index built: {total_chunks} chunks from "
+            f"{len(self.pages_for_search)} pages"
+        )
 
     def on_shutdown(self) -> None:
         """Clean up resources on shutdown."""

@@ -41,7 +41,10 @@ plugins:
         preserve_frontmatter: true
       
       search:
-        enabled: false  # Will enable in Phase 3
+        enabled: true
+        chunk_size: 1000
+        chunk_overlap: 200
+        index_path: search_index.json
       
       assets:
         enabled: false  # Will enable in Phase 4
