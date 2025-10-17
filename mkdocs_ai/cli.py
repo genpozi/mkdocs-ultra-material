@@ -14,6 +14,11 @@ from rich.markdown import Markdown
 from .generation.prompt import PromptGenerator
 from .providers import get_provider, ProviderError
 from .cache import CacheManager
+from .enhancement import (
+    EnhancementPipeline,
+    EnhancementOptions,
+    EnhancementConfig
+)
 
 console = Console()
 
@@ -339,6 +344,184 @@ def cache_clear():
         cache_manager.close()
     except Exception as e:
         console.print(f"[red]Error:[/red] {e}")
+        sys.exit(1)
+
+
+@main.command()
+@click.argument("file_path", type=click.Path(exists=True))
+@click.option(
+    "--preview",
+    is_flag=True,
+    help="Preview changes without applying",
+)
+@click.option(
+    "--apply",
+    is_flag=True,
+    help="Apply changes to file",
+)
+@click.option(
+    "--interactive",
+    "-i",
+    is_flag=True,
+    help="Interactive mode (review each change)",
+)
+@click.option(
+    "--grammar",
+    is_flag=True,
+    help="Enable grammar enhancement",
+)
+@click.option(
+    "--clarity",
+    is_flag=True,
+    help="Enable clarity enhancement",
+)
+@click.option(
+    "--consistency",
+    is_flag=True,
+    help="Enable consistency checking",
+)
+@click.option(
+    "--provider",
+    "-p",
+    type=click.Choice(["openrouter", "gemini", "anthropic", "ollama"]),
+    default="openrouter",
+    help="AI provider to use",
+)
+@click.option(
+    "--api-key",
+    envvar="OPENROUTER_API_KEY",
+    help="API key for provider",
+)
+@click.option(
+    "--verbose",
+    "-v",
+    is_flag=True,
+    help="Verbose output",
+)
+def enhance(
+    file_path: str,
+    preview: bool,
+    apply: bool,
+    interactive: bool,
+    grammar: bool,
+    clarity: bool,
+    consistency: bool,
+    provider: str,
+    api_key: Optional[str],
+    verbose: bool
+):
+    """Enhance existing documentation.
+    
+    Improves grammar, clarity, and terminology consistency while preserving
+    technical content (code blocks, frontmatter, etc.).
+    
+    Examples:
+    
+        # Preview changes
+        mkdocs-ai enhance docs/guide.md --preview
+        
+        # Apply all enhancements
+        mkdocs-ai enhance docs/guide.md --apply --grammar --clarity --consistency
+        
+        # Interactive mode
+        mkdocs-ai enhance docs/guide.md --interactive
+    """
+    # If no specific features selected, enable all
+    if not (grammar or clarity or consistency):
+        grammar = clarity = consistency = True
+    
+    # Check API key
+    if not api_key:
+        console.print("[red]Error: API key required[/red]")
+        console.print("Set OPENROUTER_API_KEY environment variable or use --api-key")
+        sys.exit(1)
+    
+    try:
+        # Initialize provider and cache
+        ai_provider = get_provider(provider, api_key=api_key)
+        cache_manager = CacheManager(cache_dir=".ai-cache")
+        
+        # Create enhancement pipeline
+        config = EnhancementConfig(
+            enabled=True,
+            provider=provider,
+            temperature=0.3
+        )
+        pipeline = EnhancementPipeline(ai_provider, cache_manager, config)
+        
+        # Create options
+        options = EnhancementOptions(
+            grammar=grammar,
+            clarity=clarity,
+            consistency=consistency,
+            temperature=0.3
+        )
+        
+        # Enhance file
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=console
+        ) as progress:
+            task = progress.add_task(f"Enhancing {file_path}...", total=None)
+            
+            result = asyncio.run(pipeline.enhance_file(file_path, options))
+            
+            progress.update(task, completed=True)
+        
+        # Display results
+        if not result.has_changes:
+            console.print("[green]✓[/green] No changes needed - document is already well-written!")
+            return
+        
+        console.print(f"\n[bold]Found {result.change_count} potential improvements:[/bold]\n")
+        console.print(result.summary())
+        
+        # Show changes by type
+        from .enhancement import ChangeType
+        
+        for change_type in ChangeType:
+            type_changes = result.changes_by_type(change_type)
+            if type_changes:
+                console.print(f"\n[bold]{change_type.value.capitalize()}:[/bold]")
+                for i, change in enumerate(type_changes[:5], 1):  # Show first 5
+                    console.print(f"  {i}. {change}")
+                if len(type_changes) > 5:
+                    console.print(f"  ... and {len(type_changes) - 5} more")
+        
+        # Preview mode
+        if preview or interactive:
+            console.print("\n[bold]Diff:[/bold]")
+            console.print(result.diff)
+        
+        # Interactive mode
+        if interactive:
+            console.print()
+            response = click.prompt(
+                "Apply changes? [y/n/d(iff)]",
+                type=str,
+                default="n"
+            )
+            
+            if response.lower() == 'd':
+                console.print(result.diff)
+                response = click.prompt("Apply changes? [y/n]", type=str, default="n")
+            
+            if response.lower() == 'y':
+                apply = True
+        
+        # Apply changes
+        if apply:
+            pipeline.apply_enhancement(file_path, result)
+            console.print(f"\n[green]✓[/green] Applied {result.change_count} changes to {file_path}")
+        elif not preview and not interactive:
+            console.print("\n[yellow]Use --apply to save changes or --preview to see diff[/yellow]")
+        
+    except Exception as e:
+        console.print(f"[red]Error: {e}[/red]")
+        if verbose:
+            import traceback
+            console.print(traceback.format_exc())
         sys.exit(1)
 
 
