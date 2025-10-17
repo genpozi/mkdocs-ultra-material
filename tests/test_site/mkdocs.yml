@@ -14,8 +14,8 @@ plugins:
       provider:
         name: openrouter
         api_key: !ENV OPENROUTER_API_KEY
-        model: anthropic/claude-3.5-sonnet
-        fallback: google/gemini-pro
+        model: meta-llama/llama-4-maverick:free
+        fallback: deepseek/deepseek-chat-v3-0324:free
         temperature: 0.7
         max_tokens: 4000
       
