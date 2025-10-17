@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="AI Assistant Team" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Installation - MkDocs AI Assistant Test Site</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Installation";
+        var mkdocs_page_input_path = "getting-started/installation.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> MkDocs AI Assistant Test Site
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Installation</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#install-from-source">Install from Source</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#optional-dependencies">Optional Dependencies</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#for-semantic-search">For Semantic Search</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#for-obelisk-integration">For Obelisk Integration</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#for-development">For Development</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#verify-installation">Verify Installation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#api-keys">API Keys</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#openrouter-recommended">OpenRouter (Recommended)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#gemini-testing">Gemini (Testing)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#anthropic-direct">Anthropic (Direct)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ollama-local">Ollama (Local)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#next-steps">Next Steps</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick-start/">Quick Start</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Features</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../features/generation/">Document Generation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../features/enhancement/">Content Enhancement</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../features/search/">Semantic Search</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Examples</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/basic/">Basic Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../examples/advanced/">Advanced</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Generated</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../generated/">Index</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">MkDocs AI Assistant Test Site</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Getting Started</li>
+      <li class="breadcrumb-item active">Installation</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="installation">Installation</h1>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>Python 3.11 or higher</li>
+<li>MkDocs 1.6.0 or higher</li>
+<li>Material for MkDocs theme (recommended)</li>
+</ul>
+<h2 id="install-from-source">Install from Source</h2>
+<p>Since this is currently in development, install from source:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>mkdocs-ai-assistant
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</code></pre></div>
+<p>This installs the plugin in editable mode, allowing you to make changes and test them immediately.</p>
+<h2 id="dependencies">Dependencies</h2>
+<p>The plugin will install these dependencies:</p>
+<ul>
+<li><code>mkdocs&gt;=1.6.0</code> - MkDocs core</li>
+<li><code>httpx&gt;=0.27.0</code> - Async HTTP client for AI APIs</li>
+<li><code>pydantic&gt;=2.0.0</code> - Data validation</li>
+<li><code>click&gt;=8.1.0</code> - CLI support</li>
+<li><code>rich&gt;=13.0.0</code> - Beautiful terminal output</li>
+<li><code>diskcache&gt;=5.6.0</code> - Persistent caching</li>
+</ul>
+<h2 id="optional-dependencies">Optional Dependencies</h2>
+<h3 id="for-semantic-search">For Semantic Search</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[search]&quot;</span>
+</code></pre></div>
+<p>Adds:
+- <code>numpy</code> - Numerical operations
+- <code>chromadb</code> - Vector database (future)</p>
+<h3 id="for-obelisk-integration">For Obelisk Integration</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[obelisk]&quot;</span>
+</code></pre></div>
+<p>Adds:
+- <code>requests</code> - Obelisk API client</p>
+<h3 id="for-development">For Development</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+</code></pre></div>
+<p>Adds testing and code quality tools.</p>
+<h2 id="verify-installation">Verify Installation</h2>
+<p>Check that the plugin is installed:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>mkdocs<span class="w"> </span>--version
+</code></pre></div>
+<p>You should see <code>ai-assistant</code> in the list of installed plugins.</p>
+<h2 id="api-keys">API Keys</h2>
+<p>The plugin requires API keys for AI providers. Set them as environment variables:</p>
+<h3 id="openrouter-recommended">OpenRouter (Recommended)</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">OPENROUTER_API_KEY</span><span class="o">=</span><span class="s2">&quot;your-key-here&quot;</span>
+</code></pre></div>
+<h3 id="gemini-testing">Gemini (Testing)</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GEMINI_API_KEY</span><span class="o">=</span><span class="s2">&quot;your-key-here&quot;</span>
+</code></pre></div>
+<h3 id="anthropic-direct">Anthropic (Direct)</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ANTHROPIC_API_KEY</span><span class="o">=</span><span class="s2">&quot;your-key-here&quot;</span>
+</code></pre></div>
+<h3 id="ollama-local">Ollama (Local)</h3>
+<p>No API key needed. Just ensure Ollama is running:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>ollama<span class="w"> </span>serve
+</code></pre></div>
+<h2 id="next-steps">Next Steps</h2>
+<ul>
+<li><a href="../quick-start/">Quick Start Guide</a></li>
+<li><a href="../../features/generation/">Configuration Options</a></li>
+<li><a href="../../examples/basic/">Basic Examples</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../.." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../quick-start/" class="btn btn-neutral float-right" title="Quick Start">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../.." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../quick-start/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
