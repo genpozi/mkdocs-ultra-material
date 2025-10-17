@@ -1,0 +1,80 @@
+# Docker Compose configuration for MkDocs AI Assistant
+# Provides development and production environments
+
+version: '3.8'
+
+services:
+  # Development server with hot-reload
+  mkdocs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mkdocs-ai-dev
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount documentation for hot-reload
+      - ./docs:/app/docs
+      - ./mkdocs.yml:/app/mkdocs.yml
+      # Mount cache for persistence
+      - ./.ai-cache:/app/.ai-cache
+      # Mount source code for development
+      - ./mkdocs_ai:/app/mkdocs_ai
+    environment:
+      # API keys from host environment
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      # MkDocs configuration
+      - MKDOCS_SERVE_HOST=0.0.0.0
+      - PYTHONUNBUFFERED=1
+    command: mkdocs serve -a 0.0.0.0:8000
+    restart: unless-stopped
+    networks:
+      - mkdocs-network
+
+  # Build service (use with --profile build)
+  build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mkdocs-ai-build
+    volumes:
+      - ./docs:/app/docs
+      - ./mkdocs.yml:/app/mkdocs.yml
+      - ./site:/app/site
+      - ./.ai-cache:/app/.ai-cache
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    command: mkdocs build --clean
+    profiles:
+      - build
+    networks:
+      - mkdocs-network
+
+  # Test site service
+  test-site:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mkdocs-ai-test
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./tests/test_site/docs:/app/docs
+      - ./tests/test_site/mkdocs.yml:/app/mkdocs.yml
+      - ./tests/test_site/.ai-cache:/app/.ai-cache
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    command: mkdocs serve -a 0.0.0.0:8000
+    profiles:
+      - test
+    networks:
+      - mkdocs-network
+
+networks:
+  mkdocs-network:
+    driver: bridge
