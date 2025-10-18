@@ -1,0 +1,151 @@
+site_name: MkDocs Ultra Material
+site_description: AI-powered documentation generation and enhancement for MkDocs
+site_author: MkDocs Ultra Material Team
+site_url: https://genpozi.github.io/mkdocs-ultra-material/
+
+repo_name: genpozi/mkdocs-ultra-material
+repo_url: https://github.com/genpozi/mkdocs-ultra-material
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search
+  - mkdocs-ai:
+      enabled: true
+      debug: false
+      
+      provider:
+        name: openrouter
+        api_key: !ENV OPENROUTER_API_KEY
+        model: anthropic/claude-3.5-sonnet
+        fallback: meta-llama/llama-4-maverick:free
+        temperature: 0.7
+        max_tokens: 4000
+      
+      cache:
+        enabled: true
+        dir: .ai-cache
+        ttl: 86400
+      
+      generation:
+        enabled: true
+        output_dir: docs/generated
+        cli_enabled: true
+        markdown_syntax: true
+      
+      enhancement:
+        enabled: false
+        auto_enhance: false
+      
+      search:
+        enabled: true
+        chunk_size: 1000
+        chunk_overlap: 200
+        index_path: search_index.json
+      
+      assets:
+        enabled: true
+        sources:
+          - type: python
+            path: mkdocs_ai
+            output_dir: docs/api
+      
+      obelisk:
+        enabled: false
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - tables
+  - footnotes
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Quick Start: QUICK_START.md
+    - Installation: getting-started/installation.md
+    - API Keys Setup: API_KEYS_SETUP.md
+  - User Guide:
+    - Usage Guide: USAGE_GUIDE.md
+    - Daily Use Guide: DAILY_USE_GUIDE.md
+    - Practical Examples: PRACTICAL_EXAMPLES.md
+    - Use Cases: USE_CASES.md
+    - Prompt Library: PROMPT_LIBRARY.md
+  - Features:
+    - Document Generation: features/generation.md
+    - Content Enhancement: features/enhancement.md
+    - Semantic Search: features/search.md
+    - Asset Processing: features/assets.md
+  - Integration:
+    - Integration Patterns: INTEGRATION_PATTERNS.md
+    - Docker: DOCKER.md
+    - GitHub Setup: GITHUB_SETUP.md
+  - Development:
+    - Contributing: CONTRIBUTING.md
+    - Implementation Status: IMPLEMENTATION_STATUS.md
+    - Roadmap: ROADMAP.md
+    - Development Journey: DEVELOPMENT_JOURNEY.md
+  - Reference:
+    - Site Structure: SITE_STRUCTURE_PLAN.md
+    - Meta Documentation: META_DOCUMENTATION_STRATEGY.md
+    - Research Analysis: RESEARCH_ANALYSIS.md
+    - Recommendations: RECOMMENDATIONS.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/genpozi/mkdocs-ultra-material
+  analytics:
+    provider: google
+    property: !ENV GOOGLE_ANALYTICS_KEY
+
+copyright: Copyright &copy; 2025 MkDocs Ultra Material Team

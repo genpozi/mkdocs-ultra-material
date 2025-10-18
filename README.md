@@ -21,6 +21,8 @@ Transform your documentation workflow with intelligent content generation, templ
 
 MkDocs Ultra Material is an AI-powered plugin for MkDocs that revolutionizes documentation creation. Generate comprehensive documentation from simple prompts, use intelligent templates, and automate your entire documentation workflow.
 
+**🎉 v0.5.0 Beta Now Available!** - [Beta Testing Guide](BETA_TESTING_GUIDE.md)
+
 ### Why MkDocs Ultra Material?
 
 - ⚡ **10x Faster**: Generate documentation in minutes, not hours
@@ -146,24 +148,33 @@ mkdocs build
 
 ## 📚 Documentation
 
-### Core Guides
+### 🎯 Beta Testing
+
+- **[Beta Testing Guide](BETA_TESTING_GUIDE.md)** - How to test v0.5.0
+- **[Beta Release Status](BETA_RELEASE_STATUS.md)** - Complete release status
+- **[Known Issues](KNOWN_ISSUES.md)** - Current limitations
+- **[Final Review Summary](FINAL_REVIEW_SUMMARY.md)** - Comprehensive review
+
+### 🚀 Getting Started
 
 - **[Quick Start Guide](QUICK_START.md)** - Get started in 5 minutes
+- **[API Keys Setup](API_KEYS_SETUP.md)** - Configure AI providers
 - **[Usage Guide](USAGE_GUIDE.md)** - Complete CLI reference
 - **[Daily Use Guide](DAILY_USE_GUIDE.md)** - Integrate into your workflow
 
-### Comprehensive Resources
+### 📖 Resources
 
 - **[Practical Examples](PRACTICAL_EXAMPLES.md)** - 25+ copy-paste examples
 - **[Use Cases Library](USE_CASES.md)** - 40+ documented use cases
 - **[Prompt Library](PROMPT_LIBRARY.md)** - 50+ proven prompts
 - **[Integration Patterns](INTEGRATION_PATTERNS.md)** - Git, CI/CD, IDE integration
 
-### Planning & Strategy
+### 🔧 Development
 
-- **[Site Structure Plan](SITE_STRUCTURE_PLAN.md)** - Complete site architecture
-- **[Meta-Documentation Strategy](META_DOCUMENTATION_STRATEGY.md)** - Self-documenting approach
+- **[Contributing Guide](CONTRIBUTING.md)** - How to contribute
 - **[Implementation Status](IMPLEMENTATION_STATUS.md)** - Current progress
+- **[Roadmap](ROADMAP.md)** - Future plans
+- **[Development Journey](DEVELOPMENT_JOURNEY.md)** - How we built this
 
 ---
 
@@ -312,12 +323,15 @@ Built with amazing open-source tools:
 
 ## 📊 Stats
 
-- **140KB** of comprehensive documentation
-- **50+** proven prompts
-- **40+** documented use cases
-- **25+** practical examples
-- **10+** integration patterns
-- **2** production-ready templates
+- **Version**: 0.5.0 Beta
+- **Status**: Ready for Testing
+- **Code**: 6,000+ lines of Python
+- **Tests**: 52 tests (unit + integration)
+- **Documentation**: 250KB+ (53 files)
+- **Prompts**: 50+ proven prompts
+- **Use Cases**: 40+ documented scenarios
+- **Examples**: 25+ practical examples
+- **Templates**: 2 production-ready templates
 
 ---
 

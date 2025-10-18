@@ -7,7 +7,7 @@ theme:
 
 plugins:
   - search
-  - ai-assistant:
+  - mkdocs-ai:
       enabled: true
       debug: true
       

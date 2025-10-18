@@ -26,9 +26,9 @@ console = Console()
 
 
 @click.group()
-@click.version_option(package_name="mkdocs-ai-assistant")
+@click.version_option(package_name="mkdocs-ultra-material")
 def main():
-    """MkDocs AI Assistant - AI-powered documentation generation."""
+    """MkDocs Ultra Material - AI-powered documentation generation."""
     pass
 
 
@@ -818,6 +818,176 @@ def search_stats(index):
         console.print(f"[red]Error: {e}[/red]")
         sys.exit(1)
 
+
+
+@main.group()
+def obelisk():
+    """Obelisk integration commands."""
+    pass
+
+
+@obelisk.command()
+@click.option(
+    "--site-dir",
+    type=click.Path(exists=True),
+    default="site",
+    help="Built site directory",
+)
+@click.option(
+    "--site-url",
+    required=True,
+    help="Base URL of the site",
+)
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(),
+    default="obelisk_export.json",
+    help="Output JSON file",
+)
+def export(site_dir: str, site_url: str, output: str):
+    """Export documentation to Obelisk format."""
+    from .obelisk import DocumentationExporter
+    
+    try:
+        exporter = DocumentationExporter(
+            site_dir=Path(site_dir),
+            site_url=site_url,
+        )
+        
+        with console.status("[bold green]Extracting documents..."):
+            documents = exporter.extract_documents()
+        
+        console.print(f"[green]✓[/green] Extracted {len(documents)} documents")
+        
+        with console.status("[bold green]Saving export..."):
+            exporter.save_export(Path(output))
+        
+        console.print(f"[green]✓[/green] Saved to {output}")
+        
+    except Exception as e:
+        console.print(f"[red]Error: {e}[/red]")
+        sys.exit(1)
+
+
+@obelisk.command()
+@click.option(
+    "--site-dir",
+    type=click.Path(exists=True),
+    default="site",
+    help="Built site directory",
+)
+@click.option(
+    "--site-url",
+    required=True,
+    help="Base URL of the site",
+)
+@click.option(
+    "--service-url",
+    required=True,
+    help="Obelisk service URL",
+)
+@click.option(
+    "--api-key",
+    envvar="OBELISK_API_KEY",
+    help="Obelisk API key",
+)
+def upload(site_dir: str, site_url: str, service_url: str, api_key: str):
+    """Upload documentation to Obelisk."""
+    from .obelisk import DocumentationExporter, ObeliskClient
+    
+    async def _upload():
+        try:
+            client = ObeliskClient(
+                service_url=service_url,
+                api_key=api_key,
+            )
+            
+            exporter = DocumentationExporter(
+                site_dir=Path(site_dir),
+                site_url=site_url,
+                client=client,
+            )
+            
+            with console.status("[bold green]Extracting documents..."):
+                documents = exporter.extract_documents()
+            
+            console.print(f"[green]✓[/green] Extracted {len(documents)} documents")
+            
+            with console.status("[bold green]Uploading to Obelisk..."):
+                ids = await exporter.export_to_obelisk(documents)
+            
+            console.print(f"[green]✓[/green] Uploaded {len(ids)} documents")
+            
+            await client.close()
+            
+        except Exception as e:
+            console.print(f"[red]Error: {e}[/red]")
+            sys.exit(1)
+    
+    asyncio.run(_upload())
+
+
+@obelisk.command()
+@click.option(
+    "--service-url",
+    required=True,
+    help="Obelisk service URL",
+)
+@click.option(
+    "--api-key",
+    envvar="OBELISK_API_KEY",
+    help="Obelisk API key",
+)
+@click.option(
+    "--min-frequency",
+    type=int,
+    default=3,
+    help="Minimum question frequency",
+)
+def gaps(service_url: str, api_key: str, min_frequency: int):
+    """Identify documentation gaps from user questions."""
+    from .obelisk import ObeliskClient, DocumentationAnalytics
+    
+    async def _analyze():
+        try:
+            client = ObeliskClient(
+                service_url=service_url,
+                api_key=api_key,
+            )
+            
+            analytics = DocumentationAnalytics(client)
+            
+            with console.status("[bold green]Analyzing questions..."):
+                gaps = await analytics.identify_gaps(min_frequency=min_frequency)
+            
+            if not gaps:
+                console.print("[yellow]No documentation gaps identified[/yellow]")
+                return
+            
+            console.print(f"\n[bold]Found {len(gaps)} documentation gaps:[/bold]\n")
+            
+            for gap in gaps:
+                priority_color = {
+                    "high": "red",
+                    "medium": "yellow",
+                    "low": "blue",
+                }.get(gap.priority, "white")
+                
+                console.print(
+                    f"[{priority_color}]●[/{priority_color}] "
+                    f"[bold]{gap.suggested_title}[/bold] "
+                    f"({gap.frequency} questions, {gap.priority} priority)"
+                )
+                console.print(f"  Topic: {gap.question}\n")
+            
+            await client.close()
+            
+        except Exception as e:
+            console.print(f"[red]Error: {e}[/red]")
+            sys.exit(1)
+    
+    asyncio.run(_analyze())
 
 
 if __name__ == "__main__":

@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "mkdocs-ai-assistant"
-version = "0.1.0"
+name = "mkdocs-ultra-material"
+version = "0.4.0"
 description = "AI-powered document generation and enhancement for MkDocs"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -56,17 +56,17 @@ search = [
     "chromadb>=0.4.0",  # Future vector DB support
 ]
 obelisk = [
-    "requests>=2.31.0",  # Obelisk API client
+    "beautifulsoup4>=4.12.0",  # HTML parsing for export
 ]
 
 [project.urls]
-Homepage = "https://github.com/genpozi/mkdocs-material"
-Documentation = "https://github.com/genpozi/mkdocs-material/tree/main/mkdocs-ai-assistant"
-Repository = "https://github.com/genpozi/mkdocs-material"
-Issues = "https://github.com/genpozi/mkdocs-material/issues"
+Homepage = "https://github.com/genpozi/mkdocs-ultra-material"
+Documentation = "https://github.com/genpozi/mkdocs-ultra-material"
+Repository = "https://github.com/genpozi/mkdocs-ultra-material"
+Issues = "https://github.com/genpozi/mkdocs-ultra-material/issues"
 
 [project.entry-points."mkdocs.plugins"]
-"ai-assistant" = "mkdocs_ai.plugin:AIAssistantPlugin"
+"mkdocs-ai" = "mkdocs_ai.plugin:AIAssistantPlugin"
 
 [project.scripts]
 mkdocs-ai = "mkdocs_ai.cli:main"

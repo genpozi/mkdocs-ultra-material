@@ -13,7 +13,7 @@ from .generation.markdown import MarkdownProcessor
 from .search.embeddings import EmbeddingGenerator
 from .search.index import VectorIndex
 
-log = logging.getLogger("mkdocs.plugins.ai-assistant")
+log = logging.getLogger("mkdocs.plugins.mkdocs-ai")
 
 
 class AIAssistantPlugin(BasePlugin[AIAssistantConfig]):

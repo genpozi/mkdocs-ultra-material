@@ -90,6 +90,7 @@ class AssetsConfig(base.Config):
     """Asset processing configuration."""
 
     enabled = c.Type(bool, default=False)
+    auto_discover = c.Type(bool, default=True)
     sources = c.Optional(c.ListOfItems(c.SubConfig(AssetSourceConfig)))
 
 

@@ -1,6 +1,6 @@
-"""MkDocs AI Assistant - AI-powered documentation generation and enhancement."""
+"""MkDocs Ultra Material - AI-powered documentation generation and enhancement."""
 
-__version__ = "0.1.0"
+__version__ = "0.5.0"
 
 from .plugin import AIAssistantPlugin
 
