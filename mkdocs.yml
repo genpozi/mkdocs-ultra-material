@@ -70,9 +70,9 @@ plugins:
         index_path: search_index.json
       
       assets:
-        enabled: true
+        enabled: false
         sources:
-          - type: python
+          - type: code
             path: mkdocs_ai
             output_dir: docs/api
       
