@@ -125,6 +125,11 @@ nav:
     - Content Enhancement: features/enhancement.md
     - Semantic Search: features/search.md
     - Asset Processing: features/assets.md
+  - Beta Testing:
+    - Beta Testing Guide: BETA_TESTING_GUIDE.md
+    - Known Issues: KNOWN_ISSUES.md
+    - Release Status: BETA_RELEASE_STATUS.md
+    - Testing Results: FINAL_REVIEW_SUMMARY.md
   - Integration:
     - Integration Patterns: INTEGRATION_PATTERNS.md
     - Docker: DOCKER.md
